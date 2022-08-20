@@ -15,10 +15,10 @@ public class Enemy : MonoBehaviour
     private float runDelay = 2f;
 
     //La enumeración no permite definir una estructura de tipos de elementos.
-    enum ZombieTypes { Crawler, Stalker, Rioter };
+    enum SpecimenTypes {Cyst, Slasher, Husk};
 
     //Creamos entonces una propiedad del tipo de enumeración creada.
-    [SerializeField] ZombieTypes zombieType;
+    [SerializeField] SpecimenTypes specimenType;
 
     //Guardamos una referencia al transform del player para movernos en su dirección.
     [SerializeField] Transform playerTransform;
@@ -34,33 +34,31 @@ public class Enemy : MonoBehaviour
     void Update()
     {
         // Usamos switch para determinar que movimiento corresponde segun el tipo de enemigo seleccionado.
-        switch (zombieType)
+        switch (specimenType)
         {
-            case ZombieTypes.Crawler:
-                Invoke("CrawlerMove",runDelay);
+            case SpecimenTypes.Cyst:
+                Invoke("CystMove",runDelay);
                 break;
-            case ZombieTypes.Stalker:
-                ChasePlayer();
+            case SpecimenTypes.Slasher:
+                Invoke("SlasherMove", runDelay);
                 break;
-            case ZombieTypes.Rioter:
-                RotateAroundPlayer();
+            case SpecimenTypes.Husk:
+                Invoke("RotateAroundPlayer", runDelay);
                 break;
         }
     }
 
-    void CrawlerMove(){
+    void CystMove(){
         MoveForward();
         enemyAnimator.SetBool("IsRun",true);
     }
 
- 
-    private void RotateAroundPlayer()
-    {
-        // Puedo rotar antes de moverme para que el enemigo quede de frente al player (lo mire).
-        LookPlayer();
-        // Rotate Around permite "orbitar" al rededor de una posición.
-        transform.RotateAround(playerTransform.position, Vector3.up, 5f * Time.deltaTime);
+    void SlasherMove(){
+        ChasePlayer();
+        enemyAnimator.SetBool("IsRun",true);
     }
+
+
 
     private void ChasePlayer()
     {
@@ -73,6 +71,14 @@ public class Enemy : MonoBehaviour
            // Uso normalized para trasformar el vector en un vector de magnitud uno (para avanzar de forma gradual y constante cada frame)
            transform.position += direction.normalized * speed * Time.deltaTime;
         }
+    }
+
+    private void RotateAroundPlayer()
+    {
+        // Puedo rotar antes de moverme para que el enemigo quede de frente al player (lo mire).
+        LookPlayer();
+        // Rotate Around permite "orbitar" al rededor de una posición.
+        transform.RotateAround(playerTransform.position, Vector3.up, 5f * Time.deltaTime);
     }
 
     private void MoveForward()
